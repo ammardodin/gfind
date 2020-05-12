@@ -1,2 +1,2 @@
 # gfind
-GNU's find with concurrency in golang
+Concurrent file finder in golang
