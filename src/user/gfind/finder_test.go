@@ -39,7 +39,7 @@ func testFind(t *testing.T, filenames []string, search *regexp.Regexp, want []st
 	}
 
 	if !reflect.DeepEqual(got, absWant) {
-		t.Errorf("gfind mistmach\n got: %v\n want: %v\n", got, absWant)
+		t.Errorf("got: %v\n want: %v\n", got, absWant)
 	}
 }
 
