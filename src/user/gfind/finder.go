@@ -16,7 +16,7 @@ type Finder struct {
 	workFeed   chan string // from workers to main thread
 	errors     chan error  // from workers to main thread
 	results    []string    // from workers to main thread
-	done       chan rune   // to terminate workers gracefully
+	done       chan byte   // to terminate workers gracefully
 	dispatched int         // counter for inflight work
 	mutex      sync.Mutex
 }
@@ -28,7 +28,7 @@ func NewFinder(regex *regexp.Regexp) *Finder {
 		work:     make(chan string, numWorkers),
 		workFeed: make(chan string, numWorkers),
 		errors:   make(chan error, numWorkers),
-		done:     make(chan rune),
+		done:     make(chan byte),
 	}
 }
 
@@ -117,7 +117,7 @@ func (finder *Finder) Find(startDir string) ([]string, error) {
 				case path := <-finder.workFeed:
 					queue.Push(path)
 				default:
-					finder.done <- rune(1)
+					finder.done <- byte(1)
 					return finder.results, nil
 				}
 			}

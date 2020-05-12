@@ -59,9 +59,11 @@ func parseFlags(programName string, args []string) (*config, error) {
 
 func main() {
 	conf, err := parseFlags(os.Args[0], os.Args[1:])
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Got error: %s\n", err)
+	if err == flag.ErrHelp {
 		flag.PrintDefaults()
+		os.Exit(2)
+	} else if err != nil {
+		fmt.Fprintf(os.Stderr, "Got error: %s\n", err)
 		os.Exit(1)
 	}
 

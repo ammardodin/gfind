@@ -38,7 +38,7 @@ func testFind(t *testing.T, filenames []string, search *regexp.Regexp, want []st
 		absWant = append(absWant, filepath.Join(tempDir, w))
 	}
 
-	if reflect.DeepEqual(got, absWant) != true {
+	if !reflect.DeepEqual(got, absWant) {
 		t.Errorf("gfind mistmach\n got: %v\n want: %v\n", got, absWant)
 	}
 }
