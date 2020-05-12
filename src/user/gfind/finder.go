@@ -10,33 +10,30 @@ import (
 	"sync"
 )
 
-type void struct{}
-
 type Finder struct {
-	startDir string
-	regex    regexp.Regexp
-	work     chan string // from main thread to workers
-	workFeed chan string // from workers to main thread
-	errors   chan error  // from workers to main thread
-	results  []string    // from workers to main thread
-	done     chan void   // to terminate workers gracefully
-	mutex    sync.Mutex
+	regex      *regexp.Regexp
+	work       chan string // from main thread to workers
+	workFeed   chan string // from workers to main thread
+	errors     chan error  // from workers to main thread
+	results    []string    // from workers to main thread
+	done       chan rune   // to terminate workers gracefully
+	dispatched int         // counter for inflight work
+	mutex      sync.Mutex
 }
 
-func NewFinder(startDir string, regex regexp.Regexp) *Finder {
+func NewFinder(regex *regexp.Regexp) *Finder {
 	numWorkers := runtime.NumCPU()
 	f := &Finder{
-		startDir: startDir,
 		regex:    regex,
 		work:     make(chan string, numWorkers),
 		workFeed: make(chan string, numWorkers),
 		errors:   make(chan error, numWorkers),
-		done:     make(chan void),
+		done:     make(chan rune),
 	}
 	return f
 }
 
-func (f *Finder) find(dir string) error {
+func (finder *Finder) find(dir string) error {
 	files, err := ioutil.ReadDir(dir)
 	if err != nil {
 		return err
@@ -45,56 +42,55 @@ func (f *Finder) find(dir string) error {
 	for _, file := range files {
 		filePath := filepath.Join(dir, file.Name())
 		if file.IsDir() {
-			f.workFeed <- filePath
-		} else if f.regex.MatchString(filePath) {
-			f.mutex.Lock()
-			f.results = append(f.results, filePath)
-			f.mutex.Unlock()
+			finder.workFeed <- filePath
+		} else if finder.regex.MatchString(filePath) {
+			finder.mutex.Lock()
+			finder.results = append(finder.results, filePath)
+			finder.mutex.Unlock()
 		}
 	}
 
 	return nil
 }
 
-func (f *Finder) worker(wg *sync.WaitGroup) {
+func (finder *Finder) worker(wg *sync.WaitGroup) {
 	defer wg.Done()
 	for {
 		select {
-		case <-f.done:
+		case <-finder.done:
 			return
-		case dir := <-f.work:
-			f.errors <- f.find(dir)
+		case dir := <-finder.work:
+			finder.errors <- finder.find(dir)
 		}
 	}
 }
 
-func (f *Finder) Find() ([]string, error) {
+func (finder *Finder) Find(startDir string) ([]string, error) {
 	wg := &sync.WaitGroup{}
 
-	defer close(f.errors)
-	defer close(f.workFeed)
-	defer close(f.work)
+	defer close(finder.errors)
+	defer close(finder.workFeed)
+	defer close(finder.work)
 	defer wg.Wait()
-	defer close(f.done)
+	defer close(finder.done)
 
 	numWorkers := runtime.NumCPU()
 	fmt.Printf("Using %d workers !\n", numWorkers)
 	for i := 0; i < numWorkers; i++ {
 		wg.Add(1)
-		go f.worker(wg)
+		go finder.worker(wg)
 	}
 
 	queue := StringQueue{}
-	queue.Push(f.startDir)
-	inflight := 0
+	queue.Push(startDir)
 
 	for {
-		work := f.work
+		work := finder.work
 		var path string
 		var err error
 
 		if queue.Empty() {
-			// Disable first case statement when queue is empty
+			// Disable second case statement when queue is empty
 			work = nil
 		} else {
 			path, err = queue.Front()
@@ -104,23 +100,26 @@ func (f *Finder) Find() ([]string, error) {
 		}
 
 		select {
-		case work <- path:
-			queue.Pop()
-			inflight++
-		case path := <-f.workFeed:
+		case path := <-finder.workFeed:
 			queue.Push(path)
-		case err = <-f.errors:
-			inflight--
+		case work <- path:
+			_, err = queue.Pop()
+			if err != nil {
+				return nil, err
+			}
+			finder.dispatched++
+		case err = <-finder.errors:
+			finder.dispatched--
 			if err != nil {
 				fmt.Fprintf(os.Stderr, fmt.Sprint(err))
 			}
-			if inflight == 0 && queue.Empty() {
+			if finder.dispatched == 0 && queue.Empty() {
 				select {
-				case path := <-f.workFeed:
+				case path := <-finder.workFeed:
 					queue.Push(path)
 				default:
-					f.done <- void{}
-					return f.results, nil
+					finder.done <- rune(1)
+					return finder.results, nil
 				}
 			}
 		}

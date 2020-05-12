@@ -27,8 +27,8 @@ func testFind(t *testing.T, filenames []string, search *regexp.Regexp, want []st
 		}
 	}
 
-	finder := NewFinder(tempDir, *search)
-	got, err := finder.Find()
+	finder := NewFinder(search)
+	got, err := finder.Find(tempDir)
 	if err != nil {
 		t.Fatal(err)
 	}

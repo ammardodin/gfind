@@ -3,32 +3,71 @@
 package main
 
 import (
+	"errors"
 	"flag"
 	"fmt"
-	"log"
+	"os"
 	"path/filepath"
 	"regexp"
 )
 
+type config struct {
+	start   string
+	pattern *regexp.Regexp
+}
+
+var (
+	MissingPatternErr = errors.New("pattern is required")
+	MissingStartErr   = errors.New("start is required")
+)
+
+// largely lifted from https://eli.thegreenplace.net/2020/testing-flag-parsing-in-go-programs/
+func parseFlags(programName string, args []string) (*config, error) {
+	flags := flag.NewFlagSet(programName, flag.ContinueOnError)
+
+	var rawStart string
+	var rawPattern string
+	flags.StringVar(&rawStart, "start", "", "Absolute or relative starting path for the search")
+	flags.StringVar(&rawPattern, "pattern", "", "Search pattern to match files against")
+
+	err := flags.Parse(args)
+	if err != nil {
+		return nil, err
+	}
+
+	if rawPattern == "" {
+		return nil, MissingPatternErr
+	}
+
+	if rawStart == "" {
+		return nil, MissingStartErr
+	}
+
+	absStart, err := filepath.Abs(rawStart)
+	if err != nil {
+		return nil, err
+	}
+	start := filepath.Clean(absStart)
+
+	pattern, err := regexp.Compile(rawPattern)
+	if err != nil {
+		return nil, err
+	}
+
+	return &config{start, pattern}, nil
+}
+
 func main() {
-	rawStart := flag.String("start", ".", "Absolute or relative starting path for the search")
-	rawExpr := flag.String("expr", "*", "Search expression to match files against")
-	flag.Parse()
-
-	absStart, err := filepath.Abs(*rawStart)
+	conf, err := parseFlags(os.Args[0], os.Args[1:])
 	if err != nil {
-		log.Fatal(err)
-	}
-	cleanStart := filepath.Clean(absStart)
-
-	expr, err := regexp.Compile(*rawExpr)
-	if err != nil {
-		log.Fatal(err)
+		fmt.Fprintf(os.Stderr, "Got error: %s\n", err)
+		flag.PrintDefaults()
+		os.Exit(1)
 	}
 
-	finder := NewFinder(cleanStart, *expr)
-	fmt.Printf("start: %s, expr: %s\n", absStart, expr)
-	matches, err := finder.Find()
+	finder := NewFinder(conf.pattern)
+	fmt.Printf("start: %s, expr: %s\n", conf.start, conf.pattern)
+	matches, err := finder.Find(conf.start)
 	for _, match := range matches {
 		fmt.Println(match)
 	}
