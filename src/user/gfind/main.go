@@ -21,7 +21,6 @@ var (
 	MissingStartErr   = errors.New("start is required")
 )
 
-// largely lifted from https://eli.thegreenplace.net/2020/testing-flag-parsing-in-go-programs/
 func parseFlags(programName string, args []string) (*config, error) {
 	flags := flag.NewFlagSet(programName, flag.ContinueOnError)
 
@@ -68,7 +67,7 @@ func main() {
 	}
 
 	finder := NewFinder(conf.pattern)
-	fmt.Printf("start: %s, expr: %s\n", conf.start, conf.pattern)
+	fmt.Printf("start: %s, pattern: %s\n", conf.start, conf.pattern)
 	matches, err := finder.Find(conf.start)
 	for _, match := range matches {
 		fmt.Println(match)

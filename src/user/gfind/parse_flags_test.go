@@ -1,4 +1,3 @@
-// largely lifted from https://eli.thegreenplace.net/2020/testing-flag-parsing-in-go-programs/
 package main
 
 import (
