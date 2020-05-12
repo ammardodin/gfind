@@ -23,14 +23,13 @@ type Finder struct {
 
 func NewFinder(regex *regexp.Regexp) *Finder {
 	numWorkers := runtime.NumCPU()
-	f := &Finder{
+	return &Finder{
 		regex:    regex,
 		work:     make(chan string, numWorkers),
 		workFeed: make(chan string, numWorkers),
 		errors:   make(chan error, numWorkers),
 		done:     make(chan rune),
 	}
-	return f
 }
 
 func (finder *Finder) find(dir string) error {
