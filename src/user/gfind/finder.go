@@ -16,8 +16,8 @@ type Finder struct {
 	work       chan string // from main thread to workers
 	workFeed   chan string // from workers to main thread
 	errors     chan error  // from workers to main thread
-	results    []string    // from workers to main thread
-	dispatched int         // counter for inflight work
+	matches    []string
+	dispatched int // counter for inflight work
 }
 
 func NewFinder(pattern *regexp.Regexp) *Finder {
@@ -42,7 +42,7 @@ func (finder *Finder) find(dir string) error {
 			finder.workFeed <- filePath
 		} else if finder.pattern.MatchString(filePath) {
 			finder.mutex.Lock()
-			finder.results = append(finder.results, filePath)
+			finder.matches = append(finder.matches, filePath)
 			finder.mutex.Unlock()
 		}
 	}
@@ -106,7 +106,7 @@ func (finder *Finder) Find(startDir string) ([]string, error) {
 			}
 		default:
 			if finder.dispatched == 0 && forDispatch.Empty() {
-				return finder.results, nil
+				return finder.matches, nil
 			}
 		}
 	}
