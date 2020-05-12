@@ -56,7 +56,7 @@ func (f *Finder) find(dir string) error {
 	return nil
 }
 
-func (f *Finder) waitAndWork(wg *sync.WaitGroup) {
+func (f *Finder) worker(wg *sync.WaitGroup) {
 	defer wg.Done()
 	for {
 		select {
@@ -81,7 +81,7 @@ func (f *Finder) Find() ([]string, error) {
 	fmt.Printf("Using %d workers !\n", numWorkers)
 	for i := 0; i < numWorkers; i++ {
 		wg.Add(1)
-		go f.waitAndWork(wg)
+		go f.worker(wg)
 	}
 
 	queue := StringQueue{}
