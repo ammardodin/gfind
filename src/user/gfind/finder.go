@@ -62,8 +62,8 @@ func (f *Finder) worker(wg *sync.WaitGroup) {
 		select {
 		case <-f.done:
 			return
-		case path := <-f.work:
-			f.errors <- f.find(path)
+		case dir := <-f.work:
+			f.errors <- f.find(dir)
 		}
 	}
 }
@@ -119,6 +119,7 @@ func (f *Finder) Find() ([]string, error) {
 				case path := <-f.workFeed:
 					queue.Push(path)
 				default:
+					f.done <- void{}
 					return f.results, nil
 				}
 			}
