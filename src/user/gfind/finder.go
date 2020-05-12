@@ -112,7 +112,7 @@ func (f *Finder) Find() ([]string, error) {
 		case err = <-f.errors:
 			inflight--
 			if err != nil {
-				fmt.Fprintf(os.Stderr, Error(err))
+				fmt.Fprintf(os.Stderr, err)
 			}
 			if inflight == 0 && queue.Empty() {
 				select {
