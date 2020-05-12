@@ -72,7 +72,7 @@ func (finder *Finder) Find(startDir string) ([]string, error) {
 		go finder.worker(wg)
 	}
 
-	forDispatch := StringQueue{}
+	forDispatch := &StringQueue{}
 	forDispatch.Push(startDir)
 
 	for {
