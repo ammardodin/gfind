@@ -13,7 +13,7 @@ type parseResult struct {
 	err  error
 }
 
-func TestParseFlagsCorrect(t *testing.T) {
+func TestParseFlags(t *testing.T) {
 	var tests = []struct {
 		args []string
 		want parseResult
