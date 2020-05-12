@@ -1,23 +1,27 @@
+// Package gfind implements a concurrent file finder.
+
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
-	"os"
 	"path/filepath"
 	"regexp"
 )
 
 func main() {
-	rawStart, rawExpr := os.Args[1], os.Args[2]
+	rawStart := flag.String("start", ".", "Absolute or relative starting path for the search")
+	rawExpr := flag.String("expr", "*", "Search expression to match files against")
+	flag.Parse()
 
-	absStart, err := filepath.Abs(rawStart)
+	absStart, err := filepath.Abs(*rawStart)
 	if err != nil {
 		log.Fatal(err)
 	}
 	cleanStart := filepath.Clean(absStart)
 
-	expr, err := regexp.Compile(rawExpr)
+	expr, err := regexp.Compile(*rawExpr)
 	if err != nil {
 		log.Fatal(err)
 	}
