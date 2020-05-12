@@ -14,7 +14,7 @@ type parseResult struct {
 }
 
 func TestParseFlags(t *testing.T) {
-	var tests = []struct {
+	tests := []struct {
 		args []string
 		want parseResult
 	}{
