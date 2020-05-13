@@ -103,7 +103,7 @@ func (finder *Finder) Find(startDir string) ([]string, error) {
 		case err = <-finder.errors:
 			finder.dispatched--
 			if err != nil {
-				fmt.Fprintf(os.Stderr, fmt.Sprint(err))
+				fmt.Fprintf(os.Stderr, err.Error())
 			}
 		default:
 			if finder.dispatched == 0 && forDispatch.Empty() {
