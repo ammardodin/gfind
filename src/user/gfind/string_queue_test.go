@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestPush(t *testing.T) {
+func Test_Push(t *testing.T) {
 	sq := &StringQueue{}
 	expected := "foobar"
 	sq.Push(expected)
@@ -18,7 +18,7 @@ func TestPush(t *testing.T) {
 	}
 }
 
-func TestFrontEmpty(t *testing.T) {
+func Test_FrontEmpty(t *testing.T) {
 	sq := &StringQueue{}
 	_, err := sq.Front()
 	if err == nil {
@@ -26,7 +26,7 @@ func TestFrontEmpty(t *testing.T) {
 	}
 }
 
-func TestFrontNonEmpty(t *testing.T) {
+func Test_FrontNonEmpty(t *testing.T) {
 	sq := &StringQueue{}
 	actual := "foobar"
 	sq.Push(actual)
@@ -39,7 +39,7 @@ func TestFrontNonEmpty(t *testing.T) {
 	}
 }
 
-func TestPopEmpty(t *testing.T) {
+func Test_PopEmpty(t *testing.T) {
 	sq := &StringQueue{}
 	_, err := sq.Pop()
 	if err == nil {
@@ -47,7 +47,7 @@ func TestPopEmpty(t *testing.T) {
 	}
 }
 
-func TestPop(t *testing.T) {
+func Test_Pop(t *testing.T) {
 	sq := &StringQueue{}
 	actual := "foobar"
 	sq.Push(actual)
@@ -60,7 +60,7 @@ func TestPop(t *testing.T) {
 	}
 }
 
-func TestSizeEmpty(t *testing.T) {
+func Test_SizeEmpty(t *testing.T) {
 	sq := &StringQueue{}
 	got := sq.Size()
 	expected := 0
@@ -69,7 +69,7 @@ func TestSizeEmpty(t *testing.T) {
 	}
 }
 
-func TestSizeNonEmpty(t *testing.T) {
+func Test_SizeNonEmpty(t *testing.T) {
 	sq := &StringQueue{}
 	sq.Push("foo")
 	got := sq.Size()
@@ -79,7 +79,7 @@ func TestSizeNonEmpty(t *testing.T) {
 	}
 }
 
-func TestEmptyEmpty(t *testing.T) {
+func Test_EmptyEmpty(t *testing.T) {
 	sq := &StringQueue{}
 	expected := true
 	got := sq.Empty()
@@ -88,7 +88,7 @@ func TestEmptyEmpty(t *testing.T) {
 	}
 }
 
-func TestEmptyNonEmpty(t *testing.T) {
+func Test_EmptyNonEmpty(t *testing.T) {
 	sq := &StringQueue{}
 	sq.Push("foo")
 	expected := false

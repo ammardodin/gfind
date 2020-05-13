@@ -13,7 +13,7 @@ type parseResult struct {
 	err  error
 }
 
-func TestParseFlags(t *testing.T) {
+func Test_ParseFlags(t *testing.T) {
 	tests := []struct {
 		args []string
 		want parseResult

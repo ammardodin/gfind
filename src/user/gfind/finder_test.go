@@ -44,21 +44,21 @@ func testFind(t *testing.T, filenames []string, search *regexp.Regexp, want []st
 	}
 }
 
-func TestFindSingleMatch(t *testing.T) {
+func Test_FindSingleMatch(t *testing.T) {
 	filenames := []string{"src/foo/foo.go", "src/bar/bar.go", "src/duck/feathered/feathered.go"}
 	search, _ := regexp.Compile(filenames[0])
 	want := []string{filenames[0]}
 	testFind(t, filenames, search, want)
 }
 
-func TestFindMultipleMatches(t *testing.T) {
+func Test_FindMultipleMatches(t *testing.T) {
 	filenames := []string{"src/foo/foo.go", "src/bar/baz/foo.go", "src/duck/feathered/feathered.go"}
 	search, _ := regexp.Compile("foo.go")
 	want := []string{filenames[0], filenames[1]}
 	testFind(t, filenames, search, want)
 }
 
-func TestFindNoMatches(t *testing.T) {
+func Test_FindNoMatches(t *testing.T) {
 	filenames := []string{"src/foo/foo.go", "src/bar/baz/baz.go", "src/duck/feathered/feathered.go"}
 	search, _ := regexp.Compile("xyz.go")
 	var want []string
