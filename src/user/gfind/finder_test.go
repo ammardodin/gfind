@@ -10,6 +10,7 @@ import (
 )
 
 func testFind(t *testing.T, filenames []string, search *regexp.Regexp, want []string) {
+	t.Helper()
 	tempDir, err := ioutil.TempDir("", "")
 	defer os.RemoveAll(tempDir)
 	if err != nil {
