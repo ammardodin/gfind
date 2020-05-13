@@ -18,15 +18,17 @@ type Finder struct {
 	errors     chan error  // from workers to main thread
 	matches    []string
 	dispatched int // counter for inflight work
+	numWorkers int
 }
 
 func NewFinder(pattern *regexp.Regexp) *Finder {
 	numWorkers := runtime.NumCPU()
 	return &Finder{
-		pattern:  pattern,
-		work:     make(chan string, numWorkers),
-		workFeed: make(chan string, numWorkers),
-		errors:   make(chan error, numWorkers),
+		pattern:    pattern,
+		work:       make(chan string, numWorkers),
+		workFeed:   make(chan string, numWorkers),
+		errors:     make(chan error, numWorkers),
+		numWorkers: numWorkers,
 	}
 }
 
@@ -65,9 +67,8 @@ func (finder *Finder) Find(startDir string) ([]string, error) {
 	defer wg.Wait()
 	defer close(finder.work)
 
-	numWorkers := runtime.NumCPU()
-	fmt.Printf("Using %d workers !\n", numWorkers)
-	for i := 0; i < numWorkers; i++ {
+	fmt.Printf("Using %d workers !\n", finder.numWorkers)
+	for i := 0; i < finder.numWorkers; i++ {
 		wg.Add(1)
 		go finder.worker(wg)
 	}
