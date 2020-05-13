@@ -14,7 +14,7 @@ type Finder struct {
 	pattern    *regexp.Regexp
 	mutex      sync.Mutex
 	work       chan string // from main thread to workers
-	workFeed   chan string // from workers to main thread
+	newDirs    chan string // from workers to main thread
 	errors     chan error  // from workers to main thread
 	matches    []string
 	dispatched int // counter for inflight work
@@ -26,7 +26,7 @@ func NewFinder(pattern *regexp.Regexp) *Finder {
 	return &Finder{
 		pattern:    pattern,
 		work:       make(chan string, numWorkers),
-		workFeed:   make(chan string, numWorkers),
+		newDirs:    make(chan string, numWorkers),
 		errors:     make(chan error, numWorkers),
 		numWorkers: numWorkers,
 	}
@@ -41,7 +41,7 @@ func (finder *Finder) find(dir string) error {
 	for _, file := range files {
 		filePath := filepath.Join(dir, file.Name())
 		if file.IsDir() {
-			finder.workFeed <- filePath
+			finder.newDirs <- filePath
 		} else if finder.pattern.MatchString(filePath) {
 			finder.mutex.Lock()
 			finder.matches = append(finder.matches, filePath)
@@ -63,7 +63,7 @@ func (finder *Finder) Find(startDir string) ([]string, error) {
 	wg := &sync.WaitGroup{}
 
 	defer close(finder.errors)
-	defer close(finder.workFeed)
+	defer close(finder.newDirs)
 	defer wg.Wait()
 	defer close(finder.work)
 
@@ -92,7 +92,7 @@ func (finder *Finder) Find(startDir string) ([]string, error) {
 		}
 
 		select {
-		case dir := <-finder.workFeed:
+		case dir := <-finder.newDirs:
 			forDispatch.Push(dir)
 		case work <- dir:
 			_, err = forDispatch.Pop()
