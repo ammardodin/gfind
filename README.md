@@ -9,5 +9,7 @@ Concurrent file finder in golang.
 ```shell script
 gfind -start <path-to-starting-directory> -pattern <pattern-to-match-against>
 ```
+
 ## Notes
-Special regex characters must be escaped when supplying the `-pattern` option.
+1. Special regex characters must be escaped when supplying the `-pattern` option.
+2. By default, much like GNU's `find`, `gfind` will output all errors it encounters to `stderr`. If you would like to silence said errors, make sure to redirect `stderr` to the `null` device, i.e. tack on a `2>/dev/null` to the end of the command.
