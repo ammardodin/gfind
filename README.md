@@ -9,4 +9,5 @@ Concurrent file finder in golang.
 ```shell script
 gfind -start <path-to-starting-directory> -pattern <pattern-to-match-against>
 ```
-Note: Special regex characters must be escaped when supplying the `-pattern` option.
+## Notes
+Special regex characters must be escaped when supplying the `-pattern` option.
