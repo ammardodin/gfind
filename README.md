@@ -1,7 +1,7 @@
 # gfind
 Concurrent file finder in golang.
 
-# How to Run ?
+## How to Run ?
 1. Clone the repository.
 2. Set your `GOPATH` to the repository's root.
 3. Run `make install` in the repository's root.
