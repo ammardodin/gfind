@@ -1,4 +1,7 @@
 # gfind
+
+[![CircleCI](https://circleci.com/gh/ammardodin/gfind.svg?style=shield)](https://circleci.com/gh/ammardodin/gfind)
+
 Concurrent file finder in golang.
 
 ## How to Run ?
