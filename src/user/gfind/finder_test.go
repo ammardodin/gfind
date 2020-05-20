@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"reflect"
 	"regexp"
+	"sort"
 	"testing"
 )
 
@@ -38,6 +39,9 @@ func testFind(t *testing.T, filenames []string, search *regexp.Regexp, want []st
 	for _, w := range want {
 		absWant = append(absWant, filepath.Join(tempDir, w))
 	}
+
+	sort.Strings(got)
+	sort.Strings(absWant)
 
 	if !reflect.DeepEqual(got, absWant) {
 		t.Errorf("got: %v\n want: %v\n", got, absWant)
