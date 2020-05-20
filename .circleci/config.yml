@@ -4,18 +4,14 @@ jobs:
     docker:
       - image: circleci/golang:1.12
     
-    working_directory: /go/src/github.com/{{ORG_NAME}}/{{REPO_NAME}}
     steps:
       - checkout
       - run:
           name: Log Go version
           command: go version
       - run:
-          name: install gfind
-          command: make install
-      - run:
           name: Run all tests
-          command: make test
+          command: go test -v
 
 workflows:
   version: 2
