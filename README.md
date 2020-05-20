@@ -47,7 +47,7 @@ gfind -start . -pattern "finder.*\.go" 2>/dev/null
 ```
 The output would be:
 ```shell script
-start: /Users/ad092s/awesomeProject, pattern: finder.*\.go
+start: /Users/batman/awesomeProject, pattern: finder.*\.go
 Using 12 workers !
 /Users/batman/awesomeProject/src/user/gfind/finder.go
 /Users/batman/awesomeProject/src/user/gfind/finder_test.go
