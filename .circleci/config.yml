@@ -11,7 +11,7 @@ jobs:
           command: go version
       - run:
           name: Run all tests
-          command: go test -v
+          command: ls -R && go test -v
 
 workflows:
   version: 2
