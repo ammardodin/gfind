@@ -11,7 +11,7 @@ jobs:
           command: go version
       - run:
           name: run all tests
-          command: make test
+          command: go test -v ./...
 
 workflows:
   version: 2
