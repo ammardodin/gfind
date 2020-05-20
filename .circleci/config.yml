@@ -11,7 +11,7 @@ jobs:
           command: go version
       - run:
           name: Run all tests
-          command: ls -R && go test -v
+          command: ls -R && echo $GOPATH && go test -v
 
 workflows:
   version: 2
