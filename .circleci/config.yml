@@ -7,10 +7,10 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Log Go version
+          name: log Go version
           command: go version
       - run:
-          name: Run all tests
+          name: run all tests
           command: make test
 
 workflows:
