@@ -48,23 +48,30 @@ func testFind(t *testing.T, filenames []string, search *regexp.Regexp, want []st
 	}
 }
 
-func Test_FindSingleMatch(t *testing.T) {
-	filenames := []string{"src/foo/foo.go", "src/bar/bar.go", "src/duck/feathered/feathered.go"}
-	search, _ := regexp.Compile(filenames[0])
-	want := []string{filenames[0]}
-	testFind(t, filenames, search, want)
-}
+func TestFind(t *testing.T) {
+	tests := []struct {
+		filenames []string
+		search    *regexp.Regexp
+		want      []string
+	}{
+		{
+			[]string{"src/foo/foo.go", "src/bar/bar.go", "src/duck/feathered/feathered.go"},
+			regexp.MustCompile("src/foo/foo.go"),
+			[]string{"src/foo/foo.go"},
+		},
+		{
+			[]string{"src/foo/foo.go", "src/bar/baz/foo.go", "src/duck/feathered/feathered.go"},
+			regexp.MustCompile("foo.go"),
+			[]string{"src/foo/foo.go", "src/bar/baz/foo.go"},
+		},
+		{
+			[]string{"src/foo/foo.go"},
+			regexp.MustCompile("xyz.go"),
+			[]string{},
+		},
+	}
 
-func Test_FindMultipleMatches(t *testing.T) {
-	filenames := []string{"src/foo/foo.go", "src/bar/baz/foo.go", "src/duck/feathered/feathered.go"}
-	search, _ := regexp.Compile("foo.go")
-	want := []string{filenames[0], filenames[1]}
-	testFind(t, filenames, search, want)
-}
-
-func Test_FindNoMatches(t *testing.T) {
-	filenames := []string{"src/foo/foo.go", "src/bar/baz/baz.go", "src/duck/feathered/feathered.go"}
-	search, _ := regexp.Compile("xyz.go")
-	var want []string
-	testFind(t, filenames, search, want)
+	for _, test := range tests {
+		testFind(t, test.filenames, test.search, test.want)
+	}
 }
