@@ -10,6 +10,9 @@ jobs:
           name: Log Go version
           command: go version
       - run:
+          name: install gfind
+          command: make install
+      - run:
           name: Run all tests
           command: make test
 
