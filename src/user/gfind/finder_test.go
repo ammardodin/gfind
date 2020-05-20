@@ -10,7 +10,7 @@ import (
 	"testing"
 )
 
-func testFind(t *testing.T, filenames []string, search *regexp.Regexp, want []string) {
+func testFind(t *testing.T, filePaths []string, search *regexp.Regexp, want []string) {
 	t.Helper()
 	tempDir, err := ioutil.TempDir("", "")
 	defer os.RemoveAll(tempDir)
@@ -18,8 +18,8 @@ func testFind(t *testing.T, filenames []string, search *regexp.Regexp, want []st
 		t.Fatal(err)
 	}
 
-	for _, filename := range filenames {
-		file := filepath.Join(tempDir, filename)
+	for _, filePath := range filePaths {
+		file := filepath.Join(tempDir, filePath)
 		if err := os.MkdirAll(filepath.Dir(file), 0755); err != nil {
 			t.Fatal(err)
 		}
@@ -50,7 +50,7 @@ func testFind(t *testing.T, filenames []string, search *regexp.Regexp, want []st
 
 func TestFind(t *testing.T) {
 	tests := []struct {
-		filenames []string
+		filePaths []string
 		search    *regexp.Regexp
 		want      []string
 	}{
@@ -72,6 +72,6 @@ func TestFind(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		testFind(t, test.filenames, test.search, test.want)
+		testFind(t, test.filePaths, test.search, test.want)
 	}
 }
