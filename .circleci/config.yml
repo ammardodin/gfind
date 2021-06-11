@@ -13,6 +13,10 @@ jobs:
           name: get goveralls
           command: go get github.com/mattn/goveralls
       - run:
+          name: set GOPATH
+          command: |
+            echo 'export GOPATH=/home/circleci/project/gfind' >> $BASH_ENV
+      - run:
           name: test and generate coverage
           command: go test ./... -v -cover -race -coverprofile=./coverage.out
       - run:
