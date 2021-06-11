@@ -9,13 +9,15 @@ jobs:
       - run:
           name: log Go version
           command: go version
-      - test:
-           pre:
-             - go get github.com/mattn/goveralls
-           override:
-             - go test -v -cover -race -coverprofile=/home/ubuntu/coverage.out
-           post:
-             - /home/ubuntu/.go_workspace/bin/goveralls -coverprofile=/home/ubuntu/coverage.out -service=circle-ci -repotoken=$COVERALLS_TOKEN
+      - run:
+          name: get goveralls
+          command: go get github.com/mattn/goveralls
+      - run:
+          name: test and generate coverage
+          command: go test -v -cover -race -coverprofile=/home/ubuntu/coverage.out
+      - run:
+          name: upload coverage to coveralls
+          command: /home/ubuntu/.go_workspace/bin/goveralls -coverprofile=/home/ubuntu/coverage.out -service=circle-ci -repotoken=$COVERALLS_TOKEN
 
 workflows:
   version: 2
