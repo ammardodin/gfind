@@ -17,7 +17,7 @@ jobs:
           command: go test ./... -v -cover -race -coverprofile=./coverage.out
       - run:
           name: upload coverage to coveralls
-          command: /home/ubuntu/.go_workspace/bin/goveralls -coverprofile=./coverage.out -service=circle-ci -repotoken=$COVERALLS_TOKEN
+          command: goveralls -coverprofile=./coverage.out -service=circle-ci -repotoken=$COVERALLS_TOKEN
 
 workflows:
   version: 2
