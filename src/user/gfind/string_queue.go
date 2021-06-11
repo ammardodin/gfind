@@ -7,7 +7,7 @@ import (
 type NoSuchElementError string
 
 func (e NoSuchElementError) Error() string {
-	return fmt.Sprintf("%s", e)
+	return fmt.Sprintf("%s", string(e))
 }
 
 type StringQueue struct {
